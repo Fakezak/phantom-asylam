@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading | Phantom Asylum</title>
+    <link rel="stylesheet" href="css/loading.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .loading-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #000, #1a0000, #000);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .loading-title {
+            color: #ff0000;
+            font-size: 3rem;
+            text-transform: uppercase;
+            letter-spacing: 10px;
+            margin-bottom: 50px;
+            text-shadow: 0 0 20px rgba(255, 0, 0, 0.7);
+            animation: glitch 2s infinite;
+        }
+
+        .loading-bar-container {
+            width: 80%;
+            max-width: 500px;
+            height: 30px;
+            background: rgba(40, 0, 0, 0.7);
+            border: 2px solid #8b0000;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .loading-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #8b0000, #ff0000, #8b0000);
+            border-radius: 13px;
+            transition: width 0.3s;
+        }
+
+        .loading-text {
+            color: #aaa;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .tip {
+            color: #666;
+            font-style: italic;
+            margin-top: 30px;
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-container">
+        <div class="loading-title">PHANTOM ASYLUM</div>
+        
+        <div class="loading-bar-container">
+            <div class="loading-bar" id="loadingBar"></div>
+        </div>
+        
+        <div class="loading-text" id="loadingText">Initializing horror systems...</div>
+        
+        <div class="tip" id="loadingTip">
+            Tip: The stick is in the garage. Find it before 3am.
+        </div>
+    </div>
+
+    <script>
+        const loadingBar = document.getElementById('loadingBar');
+        const loadingText = document.getElementById('loadingText');
+        const loadingTip = document.getElementById('loadingTip');
+        
+        const tips = [
+            "Tip: Your flashlight battery is limited. Use it wisely.",
+            "Tip: Strange events begin at 12pm. Complete your task before 3am.",
+            "Tip: Listen carefully. Sounds can save your life.",
+            "Tip: Some doors only open at specific times.",
+            "Tip: The mirror in the bathroom is your gateway.",
+            "Tip: Time freezes at 3am until you complete the ritual."
+        ];
+
+        const texts = [
+            "Loading 3D environment...",
+            "Initializing horror systems...",
+            "Loading demonic entities...",
+            "Preparing audio terror...",
+            "Generating house of horrors...",
+            "Setting time to 7:00 AM...",
+            "Almost ready..."
+        ];
+
+        let progress = 0;
+        const duration = 6000; // 6 seconds
+        const interval = 100;
+        const steps = duration / interval;
+        const progressIncrement = 100 / steps;
+
+        function updateLoading() {
+            if (progress < 100) {
+                progress += progressIncrement;
+                loadingBar.style.width = `${progress}%`;
+                
+                // Change text at certain intervals
+                if (progress % 20 < progressIncrement) {
+                    const textIndex = Math.floor(progress / 20);
+                    if (textIndex < texts.length) {
+                        loadingText.textContent = texts[textIndex];
+                    }
+                    
+                    // Change tip randomly
+                    if (Math.random() > 0.7) {
+                        loadingTip.textContent = tips[Math.floor(Math.random() * tips.length)];
+                    }
+                }
+                
+                setTimeout(updateLoading, interval);
+            } else {
+                // Redirect to main menu after loading
+                setTimeout(() => {
+                    window.location.href = 'main-menu.html';
+                }, 500);
+            }
+        }
+
+        // Start loading
+        setTimeout(updateLoading, 500);
+        
+        // Prevent accidental navigation
+        window.addEventListener('beforeunload', (e) => {
+            e.preventDefault();
+            e.returnValue = '';
+        });
+    </script>
+</body>
+</html>
