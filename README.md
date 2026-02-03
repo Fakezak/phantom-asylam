@@ -24,7 +24,7 @@ Wake at 7 AM in grandma's abandoned house. Find the stick in the garage before 3
 
 🚀 Play Now
 
-🌐 PLAY PHANTOM ASYLUM
+https://phantom-asylam.netlify.app/
 
 ---
 
