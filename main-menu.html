@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Menu | Phantom Asylum</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(139, 0, 0, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 0, 0.1) 0%, transparent 50%);
+        }
+
+        .menu-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .title {
+            font-size: 4rem;
+            color: #ff0000;
+            text-transform: uppercase;
+            letter-spacing: 15px;
+            margin-bottom: 50px;
+            text-shadow: 0 0 30px rgba(255, 0, 0, 0.7);
+            animation: titleGlow 3s infinite alternate;
+        }
+
+        .menu-items {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 300px;
+            margin: 30px 0;
+        }
+
+        .menu-button {
+            background: rgba(40, 0, 0, 0.8);
+            border: 2px solid #8b0000;
+            color: #fff;
+            padding: 20px;
+            font-size: 1.3rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-button:hover {
+            background: rgba(139, 0, 0, 0.8);
+            border-color: #ff0000;
+            transform: translateX(10px);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+        }
+
+        .menu-button::before {
+            content: '▶';
+            position: absolute;
+            left: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .menu-button:hover::before {
+            opacity: 1;
+        }
+
+        .warning-banner {
+            position: absolute;
+            bottom: 20px;
+            width: 90%;
+            text-align: center;
+            color: #ff5555;
+            font-size: 0.8rem;
+            padding: 10px;
+            border-top: 1px solid #8b0000;
+        }
+
+        .time-display {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #ff0000;
+            font-size: 1.2rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        @keyframes titleGlow {
+            0% { text-shadow: 0 0 30px rgba(255, 0, 0, 0.7); }
+            100% { text-shadow: 0 0 50px rgba(255, 0, 0, 1), 0 0 70px rgba(255, 0, 0, 0.5); }
+        }
+
+        /* Blood drip effect */
+        .blood-drip {
+            position: absolute;
+            width: 2px;
+            height: 100px;
+            background: linear-gradient(to bottom, transparent, #ff0000, transparent);
+            animation: drip 5s infinite;
+            opacity: 0;
+        }
+
+        @keyframes drip {
+            0% { transform: translateY(-100px); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(100vh); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="time-display" id="realTime">23:45</div>
+    
+    <div class="menu-container">
+        <h1 class="title">PHANTOM ASYLUM</h1>
+        
+        <div class="menu-items">
+            <button class="menu-button" onclick="startGame()">▶ PLAY</button>
+            <button class="menu-button" onclick="showSettings()">⚙ SETTINGS</button>
+            <button class="menu-button" onclick="showCredits()">📖 STORY</button>
+            <button class="menu-button" onclick="quitGame()">✖ QUIT</button>
+        </div>
+        
+        <div class="warning-banner">
+            ⚠️ 18+ HORROR EXPERIENCE | PLAY WITH HEADPHONES IN DARK ROOM | SAVE OFTEN
+        </div>
+    </div>
+
+    <!-- Blood drip effects -->
+    <div id="bloodEffects"></div>
+
+    <script>
+        // Generate blood drips
+        function createBloodDrip() {
+            const drip = document.createElement('div');
+            drip.className = 'blood-drip';
+            drip.style.left = Math.random() * 100 + 'vw';
+            drip.style.animationDelay = Math.random() * 5 + 's';
+            document.getElementById('bloodEffects').appendChild(drip);
+            
+            setTimeout(() => drip.remove(), 6000);
+        }
+
+        // Create multiple drips
+        for(let i = 0; i < 10; i++) {
+            setTimeout(createBloodDrip, i * 1000);
+            setInterval(createBloodDrip, 3000);
+        }
+
+        // Update real time
+        function updateRealTime() {
+            const now = new Date();
+            document.getElementById('realTime').textContent = 
+                now.getHours().toString().padStart(2, '0') + ':' + 
+                now.getMinutes().toString().padStart(2, '0');
+        }
+        setInterval(updateRealTime, 1000);
+        updateRealTime();
+
+        function startGame() {
+            // Play button sound
+            const audio = new Audio('assets/sounds/click.wav');
+            audio.play().catch(() => {});
+            
+            // Redirect to demonic cutscene
+            setTimeout(() => {
+                window.location.href = 'cutscenes/demonic-intro.html';
+            }, 500);
+        }
+
+        function showSettings() {
+            alert('Settings:\n\n• Volume: 100%\n• Graphics: High\n• Controls: Touch\n• Vibration: On\n• Gore: Extreme');
+        }
+
+        function showCredits() {
+            alert('STORY:\n\nYou wake at 7am in your grandmother\'s house.\nFind the stick in the garage.\nUse the bathroom mirror.\nComplete the ritual before 3am.\nSurvive.');
+        }
+
+        function quitGame() {
+            if(confirm('Return to home page?')) {
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Prevent right click
+        document.addEventListener('contextmenu', e => e.preventDefault());
+    </script>
+</body>
+          </html>
