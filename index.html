@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#000000">
+    <title>Phantom Asylum | 18+ Horror Experience</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" href="assets/icons/demon-icon.png" type="image/png">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #c00;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .warning-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            color: #ff0000;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            padding: 20px;
+        }
+
+        .game-icon {
+            width: 150px;
+            height: 150px;
+            border-radius: 25px;
+            border: 3px solid #c00;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+            margin-bottom: 40px;
+            animation: pulse 2s infinite;
+        }
+
+        .rotate-instruction {
+            background: rgba(20, 0, 0, 0.8);
+            border: 2px solid #c00;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px;
+            max-width: 500px;
+            backdrop-filter: blur(10px);
+        }
+
+        .rotate-icon {
+            font-size: 4rem;
+            margin: 20px;
+            animation: rotate 3s linear infinite;
+        }
+
+        .start-button {
+            display: none;
+            background: linear-gradient(to bottom, #8b0000, #500000);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 30px;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.7);
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .start-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 0, 0, 1);
+        }
+
+        .warning {
+            color: #ff5555;
+            font-size: 0.9rem;
+            margin-top: 30px;
+            padding: 15px;
+            border-top: 1px solid #c00;
+            width: 80%;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Portrait mode */
+        @media (orientation: portrait) {
+            .rotate-instruction { display: block; }
+            .start-button { display: none; }
+        }
+
+        /* Landscape mode */
+        @media (orientation: landscape) {
+            .rotate-instruction { display: none; }
+            .start-button { display: block; }
+        }
+    </style>
+</head>
+<body>
+    <div class="warning-overlay" id="warningOverlay">
+        <div class="rotate-icon">↻</div>
+        <h2>ROTATE YOUR DEVICE</h2>
+        <p>Please rotate your phone to landscape mode for the best experience</p>
+        <p>This game requires full attention in a dark environment</p>
+    </div>
+
+    <img src="assets/icons/demon-icon.png" alt="Phantom Asylum" class="game-icon" onerror="this.src='https://via.placeholder.com/150/8B0000/FFFFFF?text=PA'">
+
+    <div class="rotate-instruction">
+        <div class="rotate-icon">↻</div>
+        <h1>PHANTOM ASYLUM</h1>
+        <h2>18+ HORROR EXPERIENCE</h2>
+        <p>Rotate your device to landscape mode to begin</p>
+        <p><em>Recommended: Headphones & Dark Room</em></p>
+    </div>
+
+    <button class="start-button" id="startButton" onclick="startGame()">
+        ENTER THE ASYLUM
+    </button>
+
+    <div class="warning">
+        ⚠️ WARNING: This game contains intense horror elements, jump scares, and disturbing content.
+        Not suitable for minors or those with heart conditions.
+    </div>
+
+    <script>
+        // Check orientation
+        function checkOrientation() {
+            const warningOverlay = document.getElementById('warningOverlay');
+            const startButton = document.getElementById('startButton');
+            
+            if (window.innerHeight > window.innerWidth) {
+                // Portrait mode
+                warningOverlay.style.display = 'flex';
+                startButton.style.display = 'none';
+            } else {
+                // Landscape mode
+                warningOverlay.style.display = 'none';
+                startButton.style.display = 'block';
+                // Auto-start after 3 seconds in landscape
+                setTimeout(() => {
+                    if (window.innerWidth > window.innerHeight) {
+                        startGame();
+                    }
+                }, 3000);
+            }
+        }
+
+        // Initial check
+        checkOrientation();
+        
+        // Listen for orientation changes
+        window.addEventListener('resize', checkOrientation);
+        window.addEventListener('orientationchange', checkOrientation);
+
+        function startGame() {
+            // Redirect to loading screen
+            window.location.href = 'loading.html';
+        }
+
+        // Prevent right click
+        document.addEventListener('contextmenu', event => event.preventDefault());
+    </script>
+</body>
+  </html>
