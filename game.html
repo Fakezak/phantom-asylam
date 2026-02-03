@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Phantom Asylum | Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #000;
+            font-family: 'Arial', sans-serif;
+        }
+
+        #gameCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* HUD Elements */
+        .hud {
+            position: fixed;
+            z-index: 100;
+            pointer-events: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        .time-display {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #ff0000;
+            font-size: 2rem;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 1px solid #8b0000;
+        }
+
+        .objective {
+            position: absolute;
+            top: 80px;
+            left: 20px;
+            color: #ffaa00;
+            font-size: 1rem;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #ffaa00;
+            max-width: 300px;
+        }
+
+        .interaction-hint {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #00ff00;
+            background: rgba(0, 20, 0, 0.8);
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid #00ff00;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        /* Mobile Controls */
+        .mobile-controls {
+            position: fixed;
+            bottom: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-sizing: border-box;
+            z-index: 200;
+        }
+
+        .control-button {
+            width: 70px;
+            height: 70px;
+            background: rgba(40, 0, 0, 0.7);
+            border: 2px solid #8b0000;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .joystick-area {
+            position: absolute;
+            left: 30px;
+            bottom: 30px;
+            width: 150px;
+            height: 150px;
+        }
+
+        .joystick {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            background: rgba(139, 0, 0, 0.8);
+            border-radius: 50%;
+            border: 2px solid #ff0000;
+        }
+
+        /* Flashlight Battery */
+        .battery-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 100px;
+            height: 40px;
+            background: rgba(20, 20, 20, 0.8);
+            border: 2px solid #444;
+            border-radius: 5px;
+            padding: 3px;
+        }
+
+        .battery-level {
+            height: 100%;
+            width: 80%;
+            background: linear-gradient(to right, #00ff00, #ffff00, #ff0000);
+            border-radius: 3px;
+            transition: width 1s;
+        }
+
+        /* Inventory */
+        .inventory {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #8b0000;
+            border-radius: 10px;
+            padding: 10px;
+            min-width: 200px;
+        }
+
+        .inventory-item {
+            color: white;
+            padding: 5px;
+            margin: 5px 0;
+            border-bottom: 1px solid #444;
+        }
+
+        /* Pause Menu */
+        .pause-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .pause-menu h2 {
+            color: #ff0000;
+            font-size: 3rem;
+            margin-bottom: 50px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- HUD Elements -->
+    <div class="hud">
+        <div class="time-display" id="gameTime">07:00 AM</div>
+        <div class="objective" id="objective">Objective: Find the stick in the garage</div>
+        <div class="interaction-hint" id="interactionHint">Press E to interact</div>
+        
+        <div class="battery-indicator">
+            <div class="battery-level" id="batteryLevel"></div>
+        </div>
+        
+        <div class="inventory" id="inventory">
+            <div>Inventory:</div>
+            <div class="inventory-item" id="itemStick">❌ Stick</div>
+            <div class="inventory-item" id="itemFlashlight">✅ Flashlight</div>
+            <div class="inventory-item" id="itemKey">❌ Garage Key</div>
+        </div>
+    </div>
+
+    <!-- Mobile Controls -->
+    <div class="mobile-controls">
+        <div class="joystick-area">
+            <div class="joystick" id="joystick"></div>
+        </div>
+        
+        <div style="display: flex; gap: 20px;">
+            <div class="control-button" id="jumpBtn">⬆</div>
+            <div class="control-button" id="interactBtn">✋</div>
+            <div class="control-button" id="flashlightBtn">🔦</div>
+            <div class="control-button" id="pauseBtn">⏸</div>
+        </div>
+    </div>
+
+    <!-- Pause Menu -->
+    <div class="pause-menu" id="pauseMenu">
+        <h2>GAME PAUSED</h2>
+        <button onclick="resumeGame()" style="margin: 10px; padding: 15px 30px;">RESUME</button>
+        <button onclick="saveGame()" style="margin: 10px; padding: 15px 30px;">SAVE GAME</button>
+        <button onclick="quitToMenu()" style="margin: 10px; padding: 15px 30px;">QUIT TO MENU</button>
+    </div>
+
+    <!-- Three.js and Game Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js"></script>
+    
+    <script src="js/threejs-setup.js"></script>
+    <script src="js/game-controller.js"></script>
+    <script src="js/player-controls.js"></script>
+    <script src="js/timer-system.js"></script>
+    <script src="js/mobile-controls.js"></script>
+
+    <script>
+        // Game state
+        window.gameState = {
+            time: 7.0, // 7:00 AM
+            stickFound: false,
+            inDemonWorld: false,
+            flashlightBattery: 100,
+            gameComplete: false,
+            creepyEventsStarted: false
+        };
+
+        // Initialize game
+        document.addEventListener('DOMContentLoaded', () => {
+            initGame();
+            setupMobileControls();
+            startGameTimer();
+        });
+
+        function initGame() {
+            // Three.js setup will be initialized from threejs-setup.js
+            console.log('Phantom Asylum Initialized');
+            
+            // Start with flashlight on
+            updateBattery(100);
+            
+            // Set initial objective
+            updateObjective('Find the stick in the garage');
+        }
+
+        function updateGameTime(hours) {
+            const timeDisplay = document.getElementById('gameTime');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const displayHours = hours % 12 || 12;
+            const minutes = Math.floor((hours % 1) * 60);
+            
+            timeDisplay.textContent = 
+                `${displayHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+            
+            // Check for creepy events
+            if (hours >= 12 && !gameState.creepyEventsStarted) {
+                startCreepyEvents();
+            }
+            
+            // Check for time freeze at 3am
+            if (hours >= 15 && !gameState.gameComplete) { // 3am = 15 hours
+                freezeTime();
+            }
+        }
+
+        function updateObjective(text) {
+            document.getElementById('objective').textContent = `Objective: ${text}`;
+        }
+
+        function updateBattery(level) {
+            const battery = document.getElementById('batteryLevel');
+            battery.style.width = `${level}%`;
+            
+            if (level < 20) {
+                battery.style.background = '#ff0000';
+            } else if (level < 50) {
+                battery.style.background = '#ffff00';
+            }
+        }
+
+        function showInteractionHint(text) {
+            const hint = document.getElementById('interactionHint');
+            hint.textContent = text;
+            hint.style.opacity = '1';
+            setTimeout(() => {
+                hint.style.opacity = '0';
+            }, 3000);
+        }
+
+        function togglePause() {
+            const pauseMenu = document.getElementById('pauseMenu');
+            pauseMenu.style.display = pauseMenu.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function resumeGame() {
+            document.getElementById('pauseMenu').style.display = 'none';
+        }
+
+        function saveGame() {
+            localStorage.setItem('phantomAsylumSave', JSON.stringify(gameState));
+            alert('Game saved!');
+        }
+
+        function quitToMenu() {
+            if (confirm('Return to main menu? Progress will be saved.')) {
+                saveGame();
+                window.location.href = 'main-menu.html';
+            }
+        }
+
+        // Prevent accidental touches
+        document.addEventListener('touchmove', (e) => {
+            if (e.target.className !== 'control-button' && 
+                e.target.className !== 'joystick') {
+                e.preventDefault();
+            }
+        }, { passive: false });
+    </script>
+</body>
+          </html>
